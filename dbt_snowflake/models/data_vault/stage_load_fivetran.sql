@@ -1,15 +1,15 @@
 with round_number as(
 --     1. put round_number for every record partition by ID and order by _FIVETRAN_START
         SELECT *, row_number() OVER (PARTITION BY ID ORDER BY _FIVETRAN_START DESC) AS round_num
-        FROM FIVETRAN_DATABASE.RAW.APPOINTMENT
-),
-    existed as (
+        FROM FIVETRAN_DATABASE.RAW.APPOINTMENT_FIVETRAN
+)
+    ,existed as (
 --     2. check if ID existed the day before
       select *,
              case
                  when exists(
                          select *
-                         from FIVETRAN_DATABASE.RAW.APPOINTMENT
+                         from FIVETRAN_DATABASE.RAW.APPOINTMENT_FIVETRAN
                          where ID = round_number.ID
                              and to_date(_FIVETRAN_START) < to_date(round_number._FIVETRAN_START)
                      )
@@ -17,13 +17,13 @@ with round_number as(
                  else 0
                  end as existed
       from round_number
-    ),
-    lasted_record as(
+    )
+    ,lasted_record as(
 --      3. take the lasted record for each ID
         select * from existed
              where round_num = 1
-    ),
-    operation as(
+    )
+    ,operation as(
 --      4. identify as DELETE or INSERT OR UPDATE
         select *,
                case
@@ -37,5 +37,4 @@ select ID                        as SOURCE_SYSTEM_ID
        ,to_date(_FIVETRAN_START) as LOAD_DATE
        ,OPERATION
        ,_FIVETRAN_START         as SOURCE_MODIFIED
-from operation
-order by ID desc
+from operation order by ID desc
