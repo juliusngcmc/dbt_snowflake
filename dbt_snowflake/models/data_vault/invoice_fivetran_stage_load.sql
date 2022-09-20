@@ -1,4 +1,4 @@
 {{ fivetran_stage_load_macros(
-    model_name = 'raw.invoice_fivetran'
+    model_name = source('fivetran_database','invoice_fivetran')
 )
 }}

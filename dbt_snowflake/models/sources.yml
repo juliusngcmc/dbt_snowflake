@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: fivetran_database
+    schema: raw
+    tables:
+      - name: appointment_airbyte
+        identifier: appointment_airbyte
+      - name: appointment_fivetran
+        identifier: appointment_fivetran
+      - name: invoice_fivetran
+        identifier: invoice_fivetran
