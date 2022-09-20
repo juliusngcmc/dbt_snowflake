@@ -1,7 +1,8 @@
+{% macro airbyte_stage_load_macros(model_name) %}
 with round_number as(
 --     1. put round_number for every record partition by ID and order by _FIVETRAN_START
         SELECT *, row_number() OVER (PARTITION BY ID ORDER BY _AB_CDC_UPDATED_AT DESC) AS round_num
-        FROM FIVETRAN_DATABASE.RAW.APPOINTMENT_AIRBYTE
+        FROM {{ model_name }}
 )
     ,existed as (
 --     2. check if ID existed the day before
@@ -9,7 +10,7 @@ with round_number as(
              case
                  when exists(
                          select *
-                         from FIVETRAN_DATABASE.RAW.APPOINTMENT_AIRBYTE
+                         from {{ model_name }}
                          where ID = round_number.ID
                              and to_date(_AB_CDC_UPDATED_AT) < to_date(round_number._AB_CDC_UPDATED_AT)
                      )
@@ -38,3 +39,6 @@ select ID                           as SOURCE_SYSTEM_ID
        ,OPERATION
        ,_AB_CDC_UPDATED_AT          as SOURCE_MODIFIED
 from operation order by ID desc
+
+{% endmacro %}
+
