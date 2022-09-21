@@ -10,3 +10,9 @@ sources:
         identifier: appointment_fivetran
       - name: invoice_fivetran
         identifier: invoice_fivetran
+      - name: invoice_airbyte
+        identifier: invoice_airbyte
+      - name: invoice_items_fivetran
+        identifier: invoice_items_fivetran
+      - name: invoice_items_airbyte
+        identifier: invoice_items_airbyte
